@@ -25,9 +25,10 @@ int getBlockAE(ifstream & inpF, ofstream & outRp, double G, double C,
 		return -1;
 
 	vector<dataVect_T> X;
-	UINT maxF = 0;
+	UINT maxF = 0;			// largest index of features among all vectors
 	int lineNum = 0;
 	double memUsed = 0;
+	double maxNumFeats = 0;		//maximum number of features in a vector
 	while (1) {
 		string line;
 		if (getline(inpF, line)) {
@@ -74,6 +75,7 @@ int getBlockAE(ifstream & inpF, ofstream & outRp, double G, double C,
 				maxF = max(maxF, fNum);
 			}
 			delete[] lineC;
+			maxNumFeats = max(maxNumFeats, (double)numFeats);
 
 			double memReq = (double) sizeof(dataVect_T) + sizeof(feat_T) * numFeats;
 			if (memUsed + memReq >= G) {
@@ -112,7 +114,7 @@ int getBlockAE(ifstream & inpF, ofstream & outRp, double G, double C,
 	svmSolver(X, w, C, maxF);
 
 	// calc number of rp vects.
-	double numRp = G / ((double) sizeof(feat_T) * maxF);
+	double numRp = G / ((double) sizeof(feat_T) * maxNumFeats);
 	numRp = numRp * G / fSize;
 	if (numRp < 1) {
 		cerr << "Not enough memory to store representative set.\n";
