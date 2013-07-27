@@ -31,6 +31,7 @@ int getBlockAE(ifstream & inpF, ofstream & outRp, double G, double C,
 	double maxNumFeats = 0;		//maximum number of features in a vector
 	while (1) {
 		string line;
+		streampos FposRevert = inpF.tellg();
 		if (getline(inpF, line)) {
 			char * lineC = new char[line.length() + 1];
 			strcpy(lineC, line.c_str());
@@ -85,6 +86,7 @@ int getBlockAE(ifstream & inpF, ofstream & outRp, double G, double C,
 					queue<feat_T> empty;
 					swap(tempQ, empty);
 				}
+				inpF.seekg(FposRevert);
 				break;
 			}
 			dataVect_T Xtemp;
@@ -112,7 +114,6 @@ int getBlockAE(ifstream & inpF, ofstream & outRp, double G, double C,
 	double *w = new double[maxF];
 	// solve SVM for selected vectors
 	svmSolver(X, w, C, maxF);
-
 	// calc number of rp vects.
 	double numRp = G / ((double) sizeof(feat_T) * maxNumFeats);
 	numRp = numRp * G / fSize;
